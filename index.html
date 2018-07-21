@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Trabalho 1 DCC 121</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      * {
+          box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      /* Style the header */
+      .header {
+          background-color: #f1f1f1;
+          padding: 2px;
+          text-align: center;
+      }
+      /* Create three equal columns that floats next to each other */
+      .column {
+          float: left;
+          width: 33.33%;
+          padding: 15px;
+      }
+
+      #custoF td{
+        border: 1px solid black;
+      }
+
+      #custoP td{
+        border: 1px solid black;
+      }
+      /* Clear floats after the columns */
+      .row:after {
+          content: "";
+          display: table;
+          clear: both;
+      }
+
+      .form{
+        float: left;
+        width: 50%;
+        background: darkgray;
+      }
+
+      .footer {
+        padding: 20px;
+        text-align: center;
+        background: #ddd;
+        margin-top: 20px;
+      }
+      /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+      @media screen and (max-width:600px) {
+          .column {
+              width: 100%;
+          }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="header">
+      <h1>Trabalho 1 DCC121</h1>
+    </div>
+    <div class="form">
+      <form name="pessoas" id="pessoas">
+          <label for="name">Nome</label>
+          <input type="text" name="nome" value="" required/>
+          <button onclick="adicionaPessoas('nomes')">Adicionar</button>
+      </form>
+    </div>
+    <div class="form">
+      <form name="produtos" id="produtos">
+        <label for="prod">Produtos</label>
+        <input type="text" name="coluna1" value="" required/>
+        <label for="vUn">Valor Un.</label>
+        <input type="number" name="coluna2" value="" required/>
+        <button onclick="adicionaCustoFixo('custoF')">Custo Fixo</button>
+        <button onclick="adicionaPerCapta('custoP')">Per Capta</button>
+      </form>
+    </div>
+
+    <div class="row">
+      <div class="column">
+        <table id="nomes">
+          <tr>
+            <td>Pessoas</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+      <div class="column">
+        <table id="custoF">
+          <tr>
+            <td>Produto</td>
+            <td>Valor</td>
+            <td>Ação</td>
+          </tr>
+        </table>
+      </div>
+      <div class="column">
+        <table id="custoP">
+          <tr>
+            <td>Produto</td>
+            <td>Valor</td>
+            <td>Ação</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="footer"
+      <p>Valor por Pessoa: R$<span>0.00</span></p>
+      <div class="int">
+        <table>
+          <thead>
+            <th>Nome</th>
+            <th>Matricula</th>
+            <th>email</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Romulo Luiz Araujo Souza Soares</td>
+              <td>201605219AC</td>
+              <td>romulolassoares@gmail.com</td>
+            </tr>
+            <tr>
+              <td>Téo dos Santos Pimentel</td>
+              <td>201776019</td>
+              <td>pimentelteo@gmail.com</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+
+
+    <script>
+
+      var total = document.querySelector('span');
+
+      var adicionador = {
+        numero: [],
+        valorTCF: [],
+        valorTPC: [],
+        addNome: function(n){
+          var tabela = document.getElementById(n);
+          var numeroLinhas = tabela.rows.length;
+          var linha = tabela.insertRow(numeroLinhas);
+          var celula1 = linha.insertCell(0);
+          var celula2 = linha.insertCell(1);
+          celula1.innerHTML =  document.pessoas.nome.value;
+          celula2.innerHTML =  "<button onclick='removeLinhaNome(this)'>X</button>";
+          this.numero.push(celula1);
+          document.pessoas.nome.value = "";
+        },
+        removePessoa: function(n){
+          this.numero.splice(n,1);
+        },
+        removeValFixo: function(n){
+          this.valorTCF.splice(n,1);
+        },
+        removeValCapta: function(n){
+          this.valorTPC.splice(n,1);
+        },
+        valCustoFixo: function(n){
+          this.valorTCF.push(n);
+        },
+        valPerCapta: function(n){
+          this.valorTPC.push(n);
+        },
+        valTotal: function(){
+          var soma = 0;
+          var x = adicionador.calculaValFixo();
+          var y = adicionador.calculaValCapta();
+          soma = Number(x + y);
+          return soma;
+        },
+        calculaValFixo: function(){
+          var x = 0;
+          if (this.valorTCF.length == 0 && this.valorTPC == 0) {
+            return 0;
+          }
+          for (var i = 0; i < this.valorTCF.length; i++) {
+            x += Number(this.valorTCF[i]);
+          }
+          x = x/this.numero.length;
+          return x;
+        },
+        calculaValCapta: function(){
+          var y = 0;
+          for (var i = 0; i < this.valorTPC.length; i++) {
+            y += Number(this.valorTPC[i]);
+          }
+          return y;
+        }
+      }
+
+
+
+      function adicionaPessoas(idTabela) {
+        event.preventDefault();
+        adicionador.addNome(idTabela);
+        total.textContent = adicionador.valTotal();
+      }
+      function removeLinhaNome(linha) {
+        var i=linha.parentNode.parentNode.rowIndex;
+        document.getElementById('nomes').deleteRow(i);
+        adicionador.removePessoa(i-1);
+        total.textContent = adicionador.valTotal().toFixed(2);
+      }
+
+      function adicionaCustoFixo(idTabela) {
+        event.preventDefault();
+        var tabela = document.getElementById(idTabela);
+        var numeroLinhas = tabela.rows.length;
+        var linha = tabela.insertRow(numeroLinhas);
+        var celula1 = linha.insertCell(0);
+        var celula2 = linha.insertCell(1);
+        var celula3 = linha.insertCell(2);
+        adicionador.valCustoFixo(document.produtos.coluna2.value);
+        celula1.innerHTML =  document.produtos.coluna1.value;
+        celula2.innerHTML =  document.produtos.coluna2.value;
+        celula3.innerHTML =  "<button onclick='removeLinhaCustoF(this)'>Remover</button>";
+        document.produtos.coluna1.value = "";
+        document.produtos.coluna2.value = ""
+        total.textContent = adicionador.valTotal().toFixed(2);
+      }
+      function removeLinhaCustoF(linha) {
+        var i=linha.parentNode.parentNode.rowIndex;
+        document.getElementById('custoF').deleteRow(i);
+        adicionador.removeValFixo(i-1);
+        total.textContent = adicionador.valTotal().toFixed(2);
+      }
+
+      function adicionaPerCapta(idTabela) {
+        event.preventDefault();
+        var tabela = document.getElementById(idTabela);
+        var numeroLinhas = tabela.rows.length;
+        var linha = tabela.insertRow(numeroLinhas);
+        var id = idTabela;
+        var celula1 = linha.insertCell(0);
+        var celula2 = linha.insertCell(1);
+        var celula3 = linha.insertCell(2);
+        adicionador.valPerCapta(document.produtos.coluna2.value);
+        celula1.innerHTML =  document.produtos.coluna1.value;
+        celula2.innerHTML =  document.produtos.coluna2.value;
+        celula3.innerHTML =  "<button onclick='removeLinhaCustoP(this)'>Remover</button>";
+        document.produtos.coluna1.value = "";
+        document.produtos.coluna2.value = "";
+        total.textContent = "";
+        total.textContent = adicionador.valTotal().toFixed(2);
+      }
+      function removeLinhaCustoP(linha) {
+        var i=linha.parentNode.parentNode.rowIndex;
+        document.getElementById('custoP').deleteRow(i);
+        adicionador.removeValCapta(i-1);
+        total.textContent = adicionador.valTotal().toFixed(2);
+      }
+    </script>
+  </body>
+</html>
